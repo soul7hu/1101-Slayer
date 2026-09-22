@@ -840,6 +840,12 @@ console.log("میزان دارایی نهایی:", currentSession);`;
                 return;
             }
 
+            if (/^\s*(<!DOCTYPE|<html)/i.test(inputCode)) {
+                showToast("این یک فایل HTML است، نه جاوااسکریپت! لطفاً فقط کد .js را وارد کنید.", "error");
+                document.getElementById('output-code').value = "";
+                return;
+            }
+
             const options = {
                 renameVars: document.getElementById('opt-rename').checked,
                 encodeStrings: document.getElementById('opt-strings').checked,
@@ -972,6 +978,12 @@ console.log("میزان دارایی نهایی:", currentSession);`;
             fileUpload.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
+
+                if (!file.name.toLowerCase().endsWith('.js')) {
+                    showToast("فرمت نامعتبر است! لطفا فقط فایل‌های با پسوند .js بارگذاری کنید.", "error");
+                    e.target.value = '';
+                    return;
+                }
 
                 const reader = new FileReader();
                 reader.onload = function(event) {
