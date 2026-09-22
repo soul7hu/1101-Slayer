@@ -552,7 +552,7 @@
                 var t = babel.types;
                 return {
                     visitor: {
-                        Scope(path, state) {
+                        Scopable(path, state) {
                             if (!state.opts.renameVars) return;
                             var scope = path.scope;
                             
@@ -685,6 +685,35 @@
 
                 try {
                     var result = Babel.transform(inputCode, {
+                        sourceType: 'unambiguous',
+                        parserOpts: {
+                            sourceType: 'unambiguous',
+                            allowReturnOutsideFunction: true,
+                            allowSuperOutsideMethod: true,
+                            errorRecovery: true,
+                            plugins: [
+                                'jsx',
+                                'classProperties',
+                                'classPrivateProperties',
+                                'classPrivateMethods',
+                                'classStaticBlock',
+                                'decorators-legacy',
+                                'dynamicImport',
+                                'exportDefaultFrom',
+                                'exportNamespaceFrom',
+                                'functionBind',
+                                'functionSent',
+                                'importMeta',
+                                'logicalAssignment',
+                                'nullishCoalescingOperator',
+                                'numericSeparator',
+                                'objectRestSpread',
+                                'optionalCatchBinding',
+                                'optionalChaining',
+                                'throwExpressions',
+                                'topLevelAwait'
+                            ]
+                        },
                         plugins: [
                             ['metamorphic', options]
                         ],
@@ -693,7 +722,8 @@
                     });
                     self.postMessage({ success: true, code: result.code, stats: stats });
                 } catch (err) {
-                    self.postMessage({ success: false, error: err.stack || err.message });
+                    var location = (err.loc && err.loc.line) ? (' (خط ' + err.loc.line + ', ستون ' + err.loc.column + ')') : '';
+                    self.postMessage({ success: false, error: (err.message || err.stack) + location });
                 }
             };
         `;
